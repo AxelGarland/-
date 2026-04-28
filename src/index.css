@@ -1006,25 +1006,17 @@ h4,
   width: 100%;
 }
 
-.home-video-heading {
-  margin: 0 0 0.85rem;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--color-text);
-  text-align: center;
-  letter-spacing: -0.02em;
-}
-
 .home-video-frame {
   aspect-ratio: 16 / 9;
   width: 100%;
   border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, #e4e9f0 0%, #f2f5f9 45%, #dce3ec 100%);
-  border: 2px dashed var(--color-border);
-  box-shadow: var(--shadow-sm);
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .home-video-placeholder-inner {
@@ -1044,22 +1036,11 @@ h4,
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: var(--color-surface);
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary-muted);
-  box-shadow: var(--shadow-sm);
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  border: 0;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   padding-inline-start: 0.2rem;
-}
-
-.home-video-caption {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.home-video-hint {
-  font-size: 0.78rem;
-  color: var(--color-muted);
 }
 
 /* גרדיאנט מותג: צהוב-כתום → אלמוג → ים תיכוני → סגול */

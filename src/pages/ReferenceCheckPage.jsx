@@ -102,6 +102,19 @@ function safePdfFileName(prefix, name) {
   return `${prefix}${base ? `-${base}` : ''}.pdf`
 }
 
+function getTodayDateInputValue() {
+  const now = new Date()
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
+  return localDate.toISOString().slice(0, 10)
+}
+
+function formatDisplayDate(value) {
+  if (!value) return '—'
+  const [year, month, day] = String(value).split('-')
+  if (!year || !month || !day) return value
+  return `${day}.${month}.${year}`
+}
+
 function buildReferenceWhatsAppText(result) {
   const lines = [
     'תוצאות שאלון ממליץ',
@@ -109,6 +122,7 @@ function buildReferenceWhatsAppText(result) {
     'פרטי המועמד:',
     `שם: ${result.candidateName || '—'}`,
     `תפקיד: ${result.jobTitle || '—'}`,
+    `תאריך שיחת המלצה: ${formatDisplayDate(result.referenceDate)}`,
     '',
     'פרטי הממליץ:',
     `שם הממליץ: ${result.referenceName || '—'}`,
@@ -147,6 +161,7 @@ export default function ReferenceCheckPage() {
     const form = e.currentTarget
     const fd = new FormData(form)
     const candidateName = String(fd.get('candidateName') ?? '').trim()
+    const referenceDate = String(fd.get('referenceDate') ?? '').trim()
 
     const scoredValues = scoredReferenceQuestions.map((q) => fd.get(q.id))
     const concernValue = fd.get('referenceCallConcern')
@@ -157,6 +172,10 @@ export default function ReferenceCheckPage() {
     }
     if (!isValidDemoRoleId(roleId)) {
       setScoreError('נא לבחור תפקיד.')
+      return
+    }
+    if (!referenceDate) {
+      setScoreError('נא לבחור תאריך שיחת המלצה.')
       return
     }
 
@@ -189,6 +208,7 @@ export default function ReferenceCheckPage() {
       maxRaw: questionCount * 5,
       candidateName,
       jobTitle: getPositionLabel(roleId),
+      referenceDate,
       referenceName,
       sharedWorkplace,
     })
@@ -267,6 +287,17 @@ export default function ReferenceCheckPage() {
                 name="candidateName"
                 type="text"
                 autoComplete="name"
+                disabled={questionnaireLocked}
+                required
+              />
+            </label>
+            <label className="form-label">
+              תאריך שיחת המלצה:
+              <input
+                className="form-input"
+                name="referenceDate"
+                type="date"
+                defaultValue={getTodayDateInputValue()}
                 disabled={questionnaireLocked}
                 required
               />
@@ -384,6 +415,12 @@ export default function ReferenceCheckPage() {
                   <span className="reference-trust-result-label">תפקיד</span>
                   <span className="reference-trust-result-value">
                     {scoreResult.jobTitle || '—'}
+                  </span>
+                </div>
+                <div className="reference-trust-result-row">
+                  <span className="reference-trust-result-label">תאריך שיחת המלצה</span>
+                  <span className="reference-trust-result-value">
+                    {formatDisplayDate(scoreResult.referenceDate)}
                   </span>
                 </div>
                 <div className="reference-trust-result-row">

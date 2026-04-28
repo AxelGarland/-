@@ -79,6 +79,19 @@ function formatWhatsAppList(items, emptyText) {
   return items.map((item) => `- ${item}`).join('\n')
 }
 
+function getTodayDateInputValue() {
+  const now = new Date()
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
+  return localDate.toISOString().slice(0, 10)
+}
+
+function formatDisplayDate(value) {
+  if (!value) return '—'
+  const [year, month, day] = String(value).split('-')
+  if (!year || !month || !day) return value
+  return `${day}.${month}.${year}`
+}
+
 function buildWhatsAppResultText(result, anchorSummary) {
   const baseLines = [
     'סיכום וציון ההצלחה',
@@ -86,12 +99,17 @@ function buildWhatsAppResultText(result, anchorSummary) {
     'פרטי המועמד:',
     `שם: ${result.applicantName}`,
     `טלפון: ${result.phone}`,
+    `תאריך שאלון: ${formatDisplayDate(result.ratingDate)}`,
     `תפקיד: ${result.jobTitle}`,
     `אחוז המלצה: ${result.recommendationPercent}%`,
     '',
     'ציון ההצלחה:',
     `${result.final0to100}%`,
   ]
+
+  if (result.interviewerNotes) {
+    baseLines.push('', 'הערות המראיין:', result.interviewerNotes)
+  }
 
   if (result.final0to100 === 0) {
     return [
@@ -134,11 +152,13 @@ export default function RatingQuestionnairePage() {
   const resultPdfRef = useRef(null)
   const [applicantName, setApplicantName] = useState('')
   const [phone, setPhone] = useState('')
+  const [ratingDate, setRatingDate] = useState(getTodayDateInputValue)
   const [roleId, setRoleId] = useState('')
   const [anchorScores, setAnchorScores] = useState(emptyAnchorScores)
   const [experienceScore, setExperienceScore] = useState(null)
   const [predictionScore, setPredictionScore] = useState(null)
   const [predictionPercent, setPredictionPercent] = useState('')
+  const [interviewerNotes, setInterviewerNotes] = useState('')
   const [formError, setFormError] = useState(null)
   const [pdfLoading, setPdfLoading] = useState(false)
   const [pdfError, setPdfError] = useState(null)
@@ -178,6 +198,10 @@ export default function RatingQuestionnairePage() {
     }
     if (!phone.trim()) {
       setFormError('נא למלא את מספר הטלפון.')
+      return
+    }
+    if (!ratingDate) {
+      setFormError('נא לבחור תאריך שאלון.')
       return
     }
     if (!isValidDemoRoleId(roleId)) {
@@ -225,12 +249,14 @@ export default function RatingQuestionnairePage() {
       ...out,
       applicantName: applicantName.trim(),
       phone: phone.trim(),
+      ratingDate,
       jobTitle: getPositionLabel(roleId),
       profile,
       profileLabel: ratingProfileLabel[profile],
       anchorScores: { ...anchorScores },
       predictionScore,
       recommendationPercent: pred,
+      interviewerNotes: interviewerNotes.trim(),
     })
     setLocked(true)
     setShowResult(true)
@@ -306,6 +332,18 @@ export default function RatingQuestionnairePage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               autoComplete="tel"
+              disabled={locked}
+              required
+            />
+          </label>
+          <label className="form-label">
+            תאריך שאלון
+            <input
+              className="form-input"
+              name="ratingDate"
+              type="date"
+              value={ratingDate}
+              onChange={(e) => setRatingDate(e.target.value)}
               disabled={locked}
               required
             />
@@ -396,6 +434,22 @@ export default function RatingQuestionnairePage() {
           </label>
         </section>
 
+        <section className="rating-form-section">
+          <h2 className="sheet-section-title sheet-section-title-primary">הערות המראיין</h2>
+          <label className="form-label">
+            הערות המראיין
+            <textarea
+              className="form-textarea form-textarea-compact"
+              name="interviewerNotes"
+              rows={4}
+              value={interviewerNotes}
+              onChange={(e) => setInterviewerNotes(e.target.value)}
+              placeholder="כתבו כאן הערות קצרות מהראיון, נקודות לבדיקה או התרשמות כללית..."
+              disabled={locked}
+            />
+          </label>
+        </section>
+
         {formError ? <p className="reference-score-error">{formError}</p> : null}
 
         <div className="reference-form-actions">
@@ -439,6 +493,10 @@ export default function RatingQuestionnairePage() {
                     <span className="reference-trust-result-value">{result.phone}</span>
                   </div>
                   <div className="reference-trust-result-row">
+                    <span className="reference-trust-result-label">תאריך שאלון</span>
+                    <span className="reference-trust-result-value">{formatDisplayDate(result.ratingDate)}</span>
+                  </div>
+                  <div className="reference-trust-result-row">
                     <span className="reference-trust-result-label">תפקיד</span>
                     <span className="reference-trust-result-value">{result.jobTitle}</span>
                   </div>
@@ -460,6 +518,13 @@ export default function RatingQuestionnairePage() {
                   </p>
                 ) : null}
               </section>
+
+              {result.interviewerNotes ? (
+                <section className="rating-result-section">
+                  <h2 className="rating-result-section-title">הערות המראיין</h2>
+                  <p className="sheet-summary-text">{result.interviewerNotes}</p>
+                </section>
+              ) : null}
 
               {resultAnchorSummary ? (
                 <section className="rating-result-section">

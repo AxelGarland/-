@@ -25,9 +25,17 @@ function formatQuestionItem(item, index) {
   return lines.join('\n')
 }
 
+function formatInterviewDate(value) {
+  if (!value) return '—'
+  const [year, month, day] = String(value).split('-')
+  if (!year || !month || !day) return value
+  return `${day}.${month}.${year}`
+}
+
 function buildInterviewWhatsAppText({
   applicantName,
   phone,
+  interviewDate,
   positionLabel,
   notes,
   focusIntro,
@@ -42,6 +50,7 @@ function buildInterviewWhatsAppText({
     'פרטי המועמד:',
     `שם: ${applicantName || '—'}`,
     `טלפון: ${phone || '—'}`,
+    `תאריך ראיון: ${formatInterviewDate(interviewDate)}`,
     `תפקיד: ${positionLabel || '—'}`,
   ]
 
@@ -93,6 +102,7 @@ export default function InterviewQuestionsPage() {
   const {
     applicantName,
     phone,
+    interviewDate,
     positionLabel,
     positionId,
     notes,
@@ -139,6 +149,7 @@ export default function InterviewQuestionsPage() {
     const text = buildInterviewWhatsAppText({
       applicantName,
       phone,
+      interviewDate,
       positionLabel,
       notes,
       focusIntro,
@@ -171,6 +182,10 @@ export default function InterviewQuestionsPage() {
             <div className="sheet-meta-row">
               <dt>טלפון</dt>
               <dd>{phone}</dd>
+            </div>
+            <div className="sheet-meta-row">
+              <dt>תאריך ראיון</dt>
+              <dd>{formatInterviewDate(interviewDate)}</dd>
             </div>
             <div className="sheet-meta-row">
               <dt>תפקיד</dt>

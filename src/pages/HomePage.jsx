@@ -9,14 +9,11 @@ export default function HomePage() {
     <div className="home-page" dir="rtl">
       <AppHeroBanner />
 
-      <section className="home-video-section" aria-labelledby="home-video-heading">
-        <h2 id="home-video-heading" className="home-video-heading">
-          סרטון הסבר — איך להשתמש
-        </h2>
+      <section className="home-video-section" aria-label="סרטון הסבר">
         <div
           className="home-video-frame"
           role="img"
-          aria-label="מקום לסרטון הסבר. התוכן יתווסף בקרוב."
+          aria-label="סרטון הסבר"
         >
           <div className="home-video-placeholder-inner">
             <span className="home-video-play-icon" aria-hidden>
@@ -24,8 +21,6 @@ export default function HomePage() {
                 <path d="M8 5v14l11-7L8 5z" />
               </svg>
             </span>
-            <span className="home-video-caption">כאן יוצג סרטון ההדרכה (בקרוב)</span>
-            <span className="home-video-hint">יחס 16:9 — גודל טיפוסי לסרטון מוטמע</span>
           </div>
         </div>
       </section>

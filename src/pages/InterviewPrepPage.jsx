@@ -16,11 +16,18 @@ function isAllowedAttachmentName(name) {
   return /\.(doc|docx|pdf)$/i.test(name ?? '')
 }
 
+function getTodayDateInputValue() {
+  const now = new Date()
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
+  return localDate.toISOString().slice(0, 10)
+}
+
 export default function InterviewPrepPage() {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
   const [applicantName, setApplicantName] = useState('')
   const [phone, setPhone] = useState('')
+  const [interviewDate, setInterviewDate] = useState(getTodayDateInputValue)
   const [roleId, setRoleId] = useState('')
   const [notes, setNotes] = useState('')
   const [attachment, setAttachment] = useState(null)
@@ -28,7 +35,7 @@ export default function InterviewPrepPage() {
   const [attachmentError, setAttachmentError] = useState(null)
 
   const canSubmit = Boolean(
-    applicantName.trim() && phone.trim() && isValidDemoRoleId(roleId) && !attachmentLoading,
+    applicantName.trim() && phone.trim() && interviewDate && isValidDemoRoleId(roleId) && !attachmentLoading,
   )
 
   async function handleAttachmentChange(e) {
@@ -91,6 +98,7 @@ export default function InterviewPrepPage() {
       state: {
         applicantName: applicantName.trim(),
         phone: phone.trim(),
+        interviewDate,
         positionId: roleId,
         positionLabel: getPositionLabel(roleId),
         notes: notesTrim,
@@ -141,6 +149,18 @@ export default function InterviewPrepPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               autoComplete="tel"
+              required
+            />
+          </label>
+
+          <label className="form-label">
+            תאריך ראיון
+            <input
+              className="form-input"
+              name="interviewDate"
+              type="date"
+              value={interviewDate}
+              onChange={(e) => setInterviewDate(e.target.value)}
               required
             />
           </label>
