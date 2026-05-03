@@ -1007,40 +1007,23 @@ h4,
 }
 
 .home-video-frame {
+  position: relative;
   aspect-ratio: 16 / 9;
   width: 100%;
   border-radius: var(--radius-lg);
   background: #000;
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--shadow-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
 
-.home-video-placeholder-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  padding: 1.25rem;
-  text-align: center;
-}
-
-.home-video-play-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  color: #000;
+.home-video-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   border: 0;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-  padding-inline-start: 0.2rem;
+  display: block;
 }
 
 /* גרדיאנט מותג: צהוב-כתום → אלמוג → ים תיכוני → סגול */

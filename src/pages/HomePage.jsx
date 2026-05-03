@@ -10,18 +10,14 @@ export default function HomePage() {
       <AppHeroBanner />
 
       <section className="home-video-section" aria-label="סרטון הסבר">
-        <div
-          className="home-video-frame"
-          role="img"
-          aria-label="סרטון הסבר"
-        >
-          <div className="home-video-placeholder-inner">
-            <span className="home-video-play-icon" aria-hidden>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7L8 5z" />
-              </svg>
-            </span>
-          </div>
+        <div className="home-video-frame">
+          <iframe
+            className="home-video-iframe"
+            src="https://player.vimeo.com/video/1188790632?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+            title="סרטון הסבר ראיון להצלחה"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
         </div>
       </section>
 
