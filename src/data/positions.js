@@ -27,6 +27,7 @@ const POSITIONS_RAW = [
   { id: 'manager_club', label: 'מנהל.ת מועדונית', track: 'managerial' },
   { id: 'manager_mitel', label: 'מנהל.ת מיתל', track: 'managerial' },
   { id: 'behavior_analyst', label: 'מנתח.ת התנהגות', track: 'professional' },
+  { id: 'cook', label: 'מבשל.ת', track: 'entry' },
   { id: 'occupational_therapist', label: 'מרפאה בעיסוק', track: 'professional' },
   { id: 'assistant_alutaf', label: 'סייעת אלוטף', track: 'entry' },
   { id: 'assistant_gan', label: 'סייעת גנים', track: 'entry' },

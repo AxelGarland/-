@@ -136,6 +136,10 @@ function buildReferenceWhatsAppText(result) {
     lines.push('', 'המלצה:', 'על פי התוצאות, מומלץ לא להמשיך בתהליך הגיוס עם מועמד.ת זו.')
   }
 
+  if (result.personalImpression) {
+    lines.push('', 'התרשמות אישית:', result.personalImpression)
+  }
+
   return lines.join('\n')
 }
 
@@ -201,6 +205,7 @@ export default function ReferenceCheckPage() {
 
     const referenceName = String(fd.get('referenceName') ?? '').trim()
     const sharedWorkplace = String(fd.get('sharedWorkplace') ?? '').trim()
+    const personalImpression = String(fd.get('personalImpression') ?? '').trim()
 
     setScoreResult({
       grade0to100,
@@ -211,6 +216,7 @@ export default function ReferenceCheckPage() {
       referenceDate,
       referenceName,
       sharedWorkplace,
+      personalImpression,
     })
     setQuestionnaireLocked(true)
     setShowTrustBanner(true)
@@ -371,6 +377,22 @@ export default function ReferenceCheckPage() {
             </section>
           ))}
 
+          <section className="reference-personal-impression" aria-labelledby="reference-personal-impression-heading">
+            <h3 id="reference-personal-impression-heading" className="sheet-section-title sheet-section-title-primary">
+              התרשמות אישית
+            </h3>
+            <label className="form-label">
+              <textarea
+                className="form-textarea form-textarea-compact"
+                name="personalImpression"
+                rows={4}
+                disabled={questionnaireLocked}
+                placeholder="כתבו כאן את ההתרשמות האישית שלכם מהשיחה עם הממליץ…"
+                aria-labelledby="reference-personal-impression-heading"
+              />
+            </label>
+          </section>
+
           {scoreError ? <p className="reference-score-error">{scoreError}</p> : null}
 
           <div className="reference-form-actions">
@@ -443,6 +465,12 @@ export default function ReferenceCheckPage() {
                 <p className="reference-trust-zero-advisory">
                   על פי התוצאות, מומלץ לא להמשיך בתהליך הגיוס עם מועמד.ת זו.
                 </p>
+              ) : null}
+              {scoreResult.personalImpression ? (
+                <div className="reference-trust-personal-impression">
+                  <h2 className="rating-result-section-title">התרשמות אישית</h2>
+                  <p className="sheet-summary-text">{scoreResult.personalImpression}</p>
+                </div>
               ) : null}
             </div>
             <div className="rating-result-share-actions">

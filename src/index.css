@@ -1550,6 +1550,26 @@ h4,
     0 3px 14px color-mix(in srgb, var(--reference-q-accent) 32%, transparent);
 }
 
+.reference-personal-impression {
+  margin: 0.35rem 0 0;
+}
+
+.reference-personal-impression .form-label {
+  margin: 0;
+}
+
+.reference-trust-personal-impression {
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.reference-trust-personal-impression .sheet-summary-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
 .reference-form-actions {
   margin-top: 0.5rem;
   padding-top: 1.1rem;
