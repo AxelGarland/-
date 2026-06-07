@@ -1,5 +1,11 @@
 import { anchorKeys, questionBank } from '../data/questionBank.js'
 import { getPositionTrack } from '../data/positions.js'
+import {
+  getRoleSpecificQuestions,
+  hasRoleSpecificSectorQuestions,
+  isTherapeuticRole,
+  therapeuticQuestionBank,
+} from '../data/therapeuticQuestionBank.js'
 
 /** הערכת המראיין לניסיון המועמד.ת (ללא AI) */
 export const EXPERIENCE = {
@@ -109,23 +115,40 @@ function pickRandomMany(items) {
     .map((i) => copyQ(items[i]))
 }
 
+function pickAll(items) {
+  return items.map((item) => copyQ(item))
+}
+
 /**
  * @param {{ positionId: string, candidateExperience: string }} params
- * @returns {Record<string, Array<{ question: string, followUps: string[], tier?: string }>>}
+ * @returns {{
+ *   selectedQuestions: Record<string, Array<{ question: string, followUps: string[], tier?: string }>>,
+ *   roleSpecificQuestions: { label: string, questions: Array<{ question: string, followUps: string[], tier?: string }> } | null
+ * }}
  */
 export function selectQuestionsPerAnchor({ positionId, candidateExperience }) {
   const track = getPositionTrack(positionId)
+  const therapeutic = isTherapeuticRole(positionId)
+  const bank = therapeutic ? therapeuticQuestionBank : questionBank
   const out = {}
 
   for (const key of anchorKeys) {
-    const items = questionBank[key]
-    if (track === 'entry') {
+    const items = bank[key]
+    if (therapeutic) {
+      out[key] = pickAll(items)
+    } else if (track === 'entry') {
       out[key] = pickForEntryTrack(items, candidateExperience)
     } else {
       out[key] = pickRandomMany(items)
     }
   }
-  return out
+
+  return {
+    selectedQuestions: out,
+    roleSpecificQuestions: hasRoleSpecificSectorQuestions(positionId)
+      ? getRoleSpecificQuestions(positionId)
+      : null,
+  }
 }
 
 /** @deprecated — נשמר לתאימות; השתמשו ב־selectQuestionsPerAnchor */

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import AnchorColorLegend from '../components/AnchorColorLegend.jsx'
 import { anchorKeys, anchorLabelByKey } from '../data/questionBank.js'
+import { isTherapeuticRole } from '../data/therapeuticQuestionBank.js'
 import {
   buildFocusRecommendation,
   FOCUS_INTRO,
@@ -42,6 +43,7 @@ function buildInterviewWhatsAppText({
   structureSteps,
   focusExtraBullets,
   selectedQuestions,
+  roleSpecificQuestions,
   predictionQuestions,
 }) {
   const lines = [
@@ -78,6 +80,14 @@ function buildInterviewWhatsAppText({
     lines.push('', `${anchorLabelByKey[key]}:`, ...questions.map(formatQuestionItem))
   }
 
+  if (roleSpecificQuestions?.questions?.length) {
+    lines.push(
+      '',
+      `שאלות מקצועיות — ${roleSpecificQuestions.label}:`,
+      ...roleSpecificQuestions.questions.map(formatQuestionItem),
+    )
+  }
+
   lines.push(
     '',
     'ניבוי — הערכת המראיין לגבי התאמה לתפקיד:',
@@ -109,6 +119,7 @@ export default function InterviewQuestionsPage() {
     attachment,
     selectedQuestions,
     predictionQuestions: predictionFromState,
+    roleSpecificQuestions,
     focusRecommendation: focusFromState,
   } = data
 
@@ -156,6 +167,7 @@ export default function InterviewQuestionsPage() {
       structureSteps,
       focusExtraBullets,
       selectedQuestions,
+      roleSpecificQuestions,
       predictionQuestions,
     })
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
@@ -246,8 +258,9 @@ export default function InterviewQuestionsPage() {
           <div className="interview-pdf-chunk interview-anchors-intro">
             <h3 className="sheet-section-title sheet-section-title-primary">מבנה לפי עוגנים</h3>
             <p className="anchors-lead">
-              לכל עוגן נבחרו בין 7 ל־10 שאלות מהבנק. צבע המסגרת מציין את עוגן ההערכה — בהתאם למקרא
-              העוגנים למעלה.
+              {isTherapeuticRole(positionId ?? '')
+                ? 'לכל עוגן מוצגות כל השאלות מבנק נשות הטיפול. צבע המסגרת מציין את עוגן ההערכה — בהתאם למקרא העוגנים למעלה.'
+                : 'לכל עוגן נבחרו בין 7 ל־10 שאלות מהבנק. צבע המסגרת מציין את עוגן ההערכה — בהתאם למקרא העוגנים למעלה.'}
             </p>
           </div>
           {anchorKeys.map((key) => {
@@ -286,6 +299,43 @@ export default function InterviewQuestionsPage() {
             )
           })}
         </section>
+
+        {roleSpecificQuestions?.questions?.length ? (
+          <section className="sheet-section role-specific-section">
+            <div className="interview-pdf-chunk interview-role-specific-intro">
+              <h3 className="sheet-section-title sheet-section-title-primary">
+                שאלות מקצועיות — {roleSpecificQuestions.label}
+              </h3>
+              <p className="anchors-lead">
+                שאלות ייעודיות לתפקיד, בנוסף לעוגני ההערכה.
+              </p>
+            </div>
+            <ol
+              className="anchor-question-list anchor-question-list-expanded role-specific-question-list"
+              start={1}
+            >
+              {roleSpecificQuestions.questions.map((item, i) => (
+                <li key={i} className="anchor-question-li">
+                  <div
+                    className="interview-pdf-chunk interview-pdf-question-wrap"
+                    data-qnum={i + 1}
+                  >
+                    <div className="prediction-q-item">
+                      <p className="anchor-question-text">{item.question}</p>
+                      {item.followUps?.length ? (
+                        <ul className="anchor-followups-list compact-followups">
+                          {item.followUps.map((fu, fi) => (
+                            <li key={fi}>{fu}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
 
         <section className="sheet-section prediction-section">
           <div className="interview-pdf-chunk interview-prediction-intro">

@@ -82,7 +82,7 @@ export default function InterviewPrepPage() {
     if (!canSubmit) return
 
     const notesTrim = notes.trim()
-    const selectedQuestions = selectQuestionsPerAnchor({
+    const { selectedQuestions, roleSpecificQuestions } = selectQuestionsPerAnchor({
       positionId: roleId,
       candidateExperience: EXPERIENCE.EARLY,
     })
@@ -104,6 +104,7 @@ export default function InterviewPrepPage() {
         notes: notesTrim,
         attachment,
         selectedQuestions,
+        roleSpecificQuestions,
         predictionQuestions,
         focusRecommendation,
       },

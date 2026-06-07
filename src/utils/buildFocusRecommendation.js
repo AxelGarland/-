@@ -1,4 +1,5 @@
 import { getPositionTrack } from '../data/positions.js'
+import { isTherapeuticRole } from '../data/therapeuticQuestionBank.js'
 import { EXPERIENCE } from './selectAnchorQuestions.js'
 
 /** מבנה מומלץ להליך הראיון (תמיד מוצג אחרי הפתיחה) */
@@ -52,6 +53,13 @@ export function buildFocusRecommendation({
     add(
       'מסלול ניהולי: בחנו תקשורת עם צוותים, קבלת החלטות, והפרדה בין “לעשות” לבין “לנהל”.',
     )
+  }
+
+  if (isTherapeuticRole(positionId)) {
+    add(
+      'תפקיד טיפולי בגן: בדקו הטמעה במרחב הגן (לא רק בחדר טיפולים), עבודה בצוות רב-מקצועי, ושיתוף פעולה עם הורים והצוות החינוכי.',
+    )
+    add('השתמשו גם בשאלות המקצועיות — דוגמאות קונקרטיות מהעבר, לא רק ידע תיאורטי.')
   }
 
   if (/ללא ניסיון|בלי ניסיון|ראשונ|עבודה ראשונה|סטודנט|מחפש.*ראשון/.test(t)) {
