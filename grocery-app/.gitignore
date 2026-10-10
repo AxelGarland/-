@@ -1,0 +1,4 @@
+# Chains own their price files: never commit or publish raw downloads or the databases built from them.
+data/raw/
+data/*.sqlite
+__pycache__/

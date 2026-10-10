@@ -27,3 +27,13 @@ Decision needed: the network. Chains can only be reached if the cloud environmen
 - Axel changed the cloud network setting and said go. Retested Shufersal, the shared publishedprices host, Nominatim, Rami Levy and gov.il.
 - Still "403 Forbidden" from the container's proxy on every one. The setting change has not reached this running session.
 - Likely cause: network settings only apply to a **new** session, so this one still has the old rules.
+
+## Stage 2c - Switched to the Mac plan (2026-10-10 11:32)
+- Axel chose to run the download step on the Mac. Wrote (but could NOT run against real sites from here):
+  - `tools/chains.py`: the chain list. Adding a chain = one line.
+  - `tools/fetch_stores.py`: downloads one store-list file per chain, 2 s pause, honest User-Agent, writes `data/stores.sqlite`, prints the coverage report.
+  - `tools/stores.py`: reads the XML (gzip or zip, two known layouts).
+- Parser tested with 2 tiny made-up XML files (clearly labelled as fixtures): pass. That proves the parser's logic only, not that the real sites work.
+- Honest caveat: the web addresses and login steps for the shared server are from memory of how other projects do it. Untested. Expect to fix something on first run.
+- Raw downloads and the database are git-ignored: the chains own that data and we do not publish it.
+- Decision for Axel: the shared server (Rami Levy, Victory, Yohananof, Osher Ad, Tiv Taam...) needs a public username with an empty password. Off by default.
