@@ -45,3 +45,6 @@ Decision needed: the network. Chains can only be reached if the cloud environmen
 - Coverage so far: 1 chain of 10 tried.
 - Reported by Axel's paste (the terminal output was partly garbled in the paste). The data files stay on the Mac and are git-ignored.
 - Lesson for the video: the cloud machine could not reach the sites, the Mac could. Same code, different network.
+
+## Decision (2026-10-10 11:44)
+- Axel approved the shared server's public logins (public username, empty password) for the 9 skipped chains. Next: re-run `python3 tools/fetch_stores.py --allow-public-logins` on the Mac.
