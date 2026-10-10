@@ -48,3 +48,9 @@ Decision needed: the network. Chains can only be reached if the cloud environmen
 
 ## Decision (2026-10-10 11:44)
 - Axel approved the shared server's public logins (public username, empty password) for the 9 skipped chains. Next: re-run `python3 tools/fetch_stores.py --allow-public-logins` on the Mac.
+
+## Stage 2e - Shared-server chains failed (2026-10-10 11:47)
+- Ran with public logins. Shufersal OK (417). Rami Levy and 7 others: logged in, but the file list had no file named "Stores...". Victory: reply was not JSON.
+- Nothing written for failed chains. Database still holds Shufersal only.
+- Honest guess (not yet proven): the file-name filter or listing format I wrote from memory is wrong.
+- Next step: added `--debug` to print the real listing for one chain (`--only rami_levy`), then fix the filter from evidence. Filter also loosened to any name containing "store".

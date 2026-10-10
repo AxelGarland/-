@@ -30,6 +30,8 @@ def fetch_shufersal(opener):
     time.sleep(PAUSE)
     return get(opener, links[0])
 
+DEBUG = False
+
 def fetch_cerberus(opener, user):
     login = get(opener, CERBERUS + "/login").decode("utf-8", "replace")
     m = re.search(r'name="csrftoken"[^>]*content="([^"]+)"|csrftoken["\']?\s*content="([^"]+)"|content="([^"]+)"\s+name="csrftoken"', login)
@@ -38,8 +40,17 @@ def fetch_cerberus(opener, user):
     get(opener, CERBERUS + "/login/user", body); time.sleep(PAUSE)
     body = urllib.parse.urlencode({"sEcho": 1, "iColumns": 5, "iDisplayStart": 0, "iDisplayLength": 100000,
                                    "sSearch": "", "iSortingCols": 0, "cd": "/", "csrftoken": token}).encode()
-    listing = json.loads(get(opener, CERBERUS + "/file/json/dir", body))
-    files = [f for f in listing.get("aaData", []) if re.match(r"stores", f.get("fname", ""), re.I)]
+    reply = get(opener, CERBERUS + "/file/json/dir", body)
+    if DEBUG:
+        print(f"  [debug {user}] token found: {bool(token)} | reply starts: {reply[:200]!r}")
+    listing = json.loads(reply)
+    rows = listing.get("aaData", [])
+    if DEBUG:
+        print(f"  [debug {user}] {len(rows)} entries; keys of first: {list(rows[0]) if rows else None}")
+        print(f"  [debug {user}] first 12 names: {[r.get('fname') or r.get('name') for r in rows[:12]]}")
+    for f in rows:  # tolerate either key name
+        f.setdefault("fname", f.get("name", ""))
+    files = [f for f in rows if re.search(r"store", f.get("fname", ""), re.I)]
     if not files:
         raise RuntimeError("logged in, but no 'Stores' file in the directory listing")
     newest = max(files, key=lambda f: f.get("time", ""))
@@ -49,8 +60,10 @@ def fetch_cerberus(opener, user):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--allow-public-logins", action="store_true")
+    ap.add_argument("--debug", action="store_true", help="print what the server really sends")
     ap.add_argument("--only", help="comma-separated chain keys")
     a = ap.parse_args()
+    global DEBUG; DEBUG = a.debug
     os.makedirs(RAW, exist_ok=True)
     db = sqlite3.connect(DB)
     db.execute("""CREATE TABLE IF NOT EXISTS branches(chain TEXT, branch_id TEXT, name TEXT, address TEXT,
