@@ -54,3 +54,8 @@ Decision needed: the network. Chains can only be reached if the cloud environmen
 - Nothing written for failed chains. Database still holds Shufersal only.
 - Honest guess (not yet proven): the file-name filter or listing format I wrote from memory is wrong.
 - Next step: added `--debug` to print the real listing for one chain (`--only rami_levy`), then fix the filter from evidence. Filter also loosened to any name containing "store".
+
+## Stage 2f - Found the cause: security token (2026-10-10 11:49)
+- `--debug` on Rami Levy and Victory showed the real reason: Rami Levy's server rejected the file-list request with a security-token (CSRF) failure, so the empty list never meant "no Stores file". Victory returned a web page instead of data (likely failed login).
+- Hypothesis (not yet proven): the server issues a fresh token after login. Fix: after login, load /file, read the new token, use it for the list request; and say plainly when the login form shows up again.
+- Not proven until re-run on the Mac.

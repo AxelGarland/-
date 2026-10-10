@@ -32,18 +32,37 @@ def fetch_shufersal(opener):
 
 DEBUG = False
 
+def find_token(page):
+    """The server puts a security token (CSRF) in a <meta> tag; attribute order varies."""
+    for pat in (r'name="csrftoken"[^>]*content="([^"]+)"', r'content="([^"]+)"[^>]*name="csrftoken"',
+                r'name="csrftoken"[^>]*value="([^"]+)"', r'value="([^"]+)"[^>]*name="csrftoken"'):
+        m = re.search(pat, page)
+        if m: return m.group(1)
+    return ""
+
 def fetch_cerberus(opener, user):
     login = get(opener, CERBERUS + "/login").decode("utf-8", "replace")
-    m = re.search(r'name="csrftoken"[^>]*content="([^"]+)"|csrftoken["\']?\s*content="([^"]+)"|content="([^"]+)"\s+name="csrftoken"', login)
-    token = next((g for g in (m.groups() if m else []) if g), "")
+    token = find_token(login)
     body = urllib.parse.urlencode({"username": user, "password": "", "Submit": "Sign in", "csrftoken": token}).encode()
-    get(opener, CERBERUS + "/login/user", body); time.sleep(PAUSE)
+    after = get(opener, CERBERUS + "/login/user", body).decode("utf-8", "replace"); time.sleep(PAUSE)
+    # The server issues a NEW token after login: read it from a page we are now allowed to see.
+    page = get(opener, CERBERUS + "/file").decode("utf-8", "replace")
+    if DEBUG:
+        print(f"  [debug {user}] login token: {bool(token)} | login reply starts: {after[:120]!r}")
+        print(f"  [debug {user}] /file page has login form: {'type=\"password\"' in page} | new token found: {bool(find_token(page))}")
+    if 'type="password"' in page:
+        raise RuntimeError("login did not work (server showed the login form again; username may be wrong)")
+    token = find_token(page) or token
+    time.sleep(PAUSE)
     body = urllib.parse.urlencode({"sEcho": 1, "iColumns": 5, "iDisplayStart": 0, "iDisplayLength": 100000,
                                    "sSearch": "", "iSortingCols": 0, "cd": "/", "csrftoken": token}).encode()
     reply = get(opener, CERBERUS + "/file/json/dir", body)
     if DEBUG:
-        print(f"  [debug {user}] token found: {bool(token)} | reply starts: {reply[:200]!r}")
-    listing = json.loads(reply)
+        print(f"  [debug {user}] list reply starts: {reply[:200]!r}")
+    try:
+        listing = json.loads(reply)
+    except ValueError:
+        raise RuntimeError("file list reply was not JSON: " + reply[:80].decode("utf-8", "replace"))
     rows = listing.get("aaData", [])
     if DEBUG:
         print(f"  [debug {user}] {len(rows)} entries; keys of first: {list(rows[0]) if rows else None}")
@@ -52,7 +71,7 @@ def fetch_cerberus(opener, user):
         f.setdefault("fname", f.get("name", ""))
     files = [f for f in rows if re.search(r"store", f.get("fname", ""), re.I)]
     if not files:
-        raise RuntimeError("logged in, but no 'Stores' file in the directory listing")
+        raise RuntimeError(f"list worked ({len(rows)} entries) but none has 'store' in its name; reply: {str(listing)[:100]}")
     newest = max(files, key=lambda f: f.get("time", ""))
     time.sleep(PAUSE)
     return get(opener, CERBERUS + "/file/d/" + urllib.parse.quote(newest["fname"])), newest["fname"]
