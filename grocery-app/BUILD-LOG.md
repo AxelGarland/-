@@ -22,3 +22,8 @@ What I learned about the open-source tool:
 - Could not yet check the other three projects named in the brief.
 
 Decision needed: the network. Chains can only be reached if the cloud environment's network access is widened, or if the downloads run on the Mac.
+
+## Stage 2b - Retry after widening the network (2026-10-10 11:31)
+- Axel changed the cloud network setting and said go. Retested Shufersal, the shared publishedprices host, Nominatim, Rami Levy and gov.il.
+- Still "403 Forbidden" from the container's proxy on every one. The setting change has not reached this running session.
+- Likely cause: network settings only apply to a **new** session, so this one still has the old rules.
