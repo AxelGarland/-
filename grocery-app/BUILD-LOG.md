@@ -37,3 +37,11 @@ Decision needed: the network. Chains can only be reached if the cloud environmen
 - Honest caveat: the web addresses and login steps for the shared server are from memory of how other projects do it. Untested. Expect to fix something on first run.
 - Raw downloads and the database are git-ignored: the chains own that data and we do not publish it.
 - Decision for Axel: the shared server (Rami Levy, Victory, Yohananof, Osher Ad, Tiv Taam...) needs a public username with an empty password. Off by default.
+
+## Stage 2d - First real run, on the Mac (2026-10-10 11:42)
+- A Claude session on Axel's Mac read the code first, then ran `python3 tools/fetch_stores.py` (no public logins).
+- **Shufersal worked first time: 417 branches, 111 distinct city names.** So the untested web address and parser from memory were right for this chain.
+- The other 9 chains (Rami Levy, Victory, Yohananof, Osher Ad, Tiv Taam, Keshet, Dor Alon, Hazi Hinam, Stop Market) were skipped on purpose: they need the shared server's public login, which Axel has not approved yet.
+- Coverage so far: 1 chain of 10 tried.
+- Reported by Axel's paste (the terminal output was partly garbled in the paste). The data files stay on the Mac and are git-ignored.
+- Lesson for the video: the cloud machine could not reach the sites, the Mac could. Same code, different network.
