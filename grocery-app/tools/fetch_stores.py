@@ -40,6 +40,25 @@ def find_token(page):
         if m: return m.group(1)
     return ""
 
+def inspect_login(opener, user):
+    """Print what the login page asks for and what the server answers. Makes the same requests as a normal login."""
+    req = urllib.request.Request(CERBERUS + "/login", headers={"User-Agent": UA})
+    with opener.open(req, timeout=60) as r: page = r.read().decode("utf-8", "replace")
+    form = re.search(r"<form.*?</form>", page, re.S | re.I)
+    print(f"--- {user}: login page form ---")
+    print(re.sub(r'(content|value)="[A-Za-z0-9+/=_-]{20,}"', r'\1="<token>"', form.group(0) if form else page[:800])[:1500])
+    token = find_token(page)
+    body = urllib.parse.urlencode({"username": user, "password": "", "Submit": "Sign in", "csrftoken": token}).encode()
+    req = urllib.request.Request(CERBERUS + "/login/user", data=body, headers={"User-Agent": UA})
+    try:
+        with opener.open(req, timeout=60) as r:
+            text = r.read().decode("utf-8", "replace")
+            print(f"--- {user}: login answer: status {r.status}, ended at {r.geturl()}")
+    except urllib.error.HTTPError as e:
+        text = e.read().decode("utf-8", "replace"); print(f"--- {user}: login answer: HTTP {e.code}")
+    print("text:", re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text))[:300])
+    print("cookies:", [c.name for c in opener.handlers[-1].cookiejar] if hasattr(opener.handlers[-1], "cookiejar") else "?")
+
 def fetch_cerberus(opener, user):
     login = get(opener, CERBERUS + "/login").decode("utf-8", "replace")
     token = find_token(login)
@@ -49,7 +68,8 @@ def fetch_cerberus(opener, user):
     page = get(opener, CERBERUS + "/file").decode("utf-8", "replace")
     if DEBUG:
         print(f"  [debug {user}] login token: {bool(token)} | login reply starts: {after[:120]!r}")
-        print(f"  [debug {user}] /file page has login form: {'type=\"password\"' in page} | new token found: {bool(find_token(page))}")
+        has_form = 'type="password"' in page
+        print(f"  [debug {user}] /file page has login form: {has_form} | new token found: {bool(find_token(page))}")
     if 'type="password"' in page:
         raise RuntimeError("login did not work (server showed the login form again; username may be wrong)")
     token = find_token(page) or token
@@ -80,6 +100,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--allow-public-logins", action="store_true")
     ap.add_argument("--debug", action="store_true", help="print what the server really sends")
+    ap.add_argument("--inspect-login", action="store_true", help="show login form fields and the server's answer")
     ap.add_argument("--only", help="comma-separated chain keys")
     a = ap.parse_args()
     global DEBUG; DEBUG = a.debug
@@ -94,6 +115,9 @@ def main():
             report.append((key, name, "SKIPPED", "needs the shared server's public login (use --allow-public-logins)")); continue
         try:
             opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+            if a.inspect_login:
+                if kind == "cerberus": inspect_login(opener, user)
+                continue
             if kind == "shufersal": raw, fname = fetch_shufersal(opener), "Stores"
             else: raw, fname = fetch_cerberus(opener, user)
             with open(os.path.join(RAW, key + ".raw"), "wb") as f: f.write(raw)

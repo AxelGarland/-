@@ -59,3 +59,9 @@ Decision needed: the network. Chains can only be reached if the cloud environmen
 - `--debug` on Rami Levy and Victory showed the real reason: Rami Levy's server rejected the file-list request with a security-token (CSRF) failure, so the empty list never meant "no Stores file". Victory returned a web page instead of data (likely failed login).
 - Hypothesis (not yet proven): the server issues a fresh token after login. Fix: after login, load /file, read the new token, use it for the list request; and say plainly when the login form shows up again.
 - Not proven until re-run on the Mac.
+
+## Stage 2g - The login itself fails (2026-10-10 11:52)
+- After the token fix, the Mac run showed both Rami Levy and Victory get the login form back after login. So the earlier "CSRF check failed" was a symptom: we were never logged in.
+- Possible causes (unproven): the usernames I wrote from memory are wrong, or the form wants something extra / does not accept an empty password.
+- My bug: a debug line used a backslash inside an f-string, which crashes on the Mac's older Python 3.9. Fixed in the repo (works on 3.9+).
+- Next: new `--inspect-login` mode that prints the login form's fields and the server's reply, so we fix this from evidence.
