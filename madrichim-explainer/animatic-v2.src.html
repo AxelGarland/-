@@ -1,0 +1,490 @@
+<title>Madrichim Explainer Animatic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: one 16:9 stage with brand-colour shapes, a thin control bar, scene chips below. */
+:root{
+  --bg:#F3F1EC; --fg:#1B2437; --muted:#5E6679; --line:#D8D4CB; --card:#FFFFFF;
+  --brand:#0054A6; --brand-ink:#FFFFFF; --chip:#E9E6DF; --chip-on:#0054A6; --chip-on-fg:#FFFFFF;
+  --font:'Heebo',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10172A; --fg:#EEF0F6; --muted:#A3ABC0; --line:#2A3452; --card:#18213A;
+    --brand:#6FA8EE; --brand-ink:#0B1630; --chip:#1F2A47; --chip-on:#6FA8EE; --chip-on-fg:#0B1630;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10172A; --fg:#EEF0F6; --muted:#A3ABC0; --line:#2A3452; --card:#18213A;
+  --brand:#6FA8EE; --brand-ink:#0B1630; --chip:#1F2A47; --chip-on:#6FA8EE; --chip-on-fg:#0B1630;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:1120px;margin-inline:auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0;font-weight:800;letter-spacing:-.01em}
+.lede{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.stage{position:relative;aspect-ratio:16/9;width:100%;border-radius:16px;overflow:hidden;container-type:inline-size;background:#F6F3EC;box-shadow:0 0 0 1px var(--line)}
+.stage svg{display:block;width:100%;height:100%}
+.sub{position:absolute;inset-inline:6%;bottom:3.5%;text-align:center;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.sub.on{opacity:1}
+.sub span{display:block;width:fit-content;max-width:100%;margin-inline:auto;color:#fff;border-radius:.5em;font-weight:500;line-height:1.35;text-wrap:balance}
+.sub .he{background:rgba(18,26,46,.86);padding:.3em .85em;font-size:clamp(12px,2.3cqw,30px)}
+.sub .en{background:rgba(18,26,46,.72);padding:.2em .7em;margin-top:.3em;font-size:clamp(10px,1.6cqw,21px);font-weight:400}
+.sub span:empty,.sub.noen .en{display:none}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;font-size:15px;color:var(--brand-ink);background:var(--brand);border:0;border-radius:10px;padding:9px 18px;cursor:pointer;min-width:92px}
+.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn:focus-visible,.chip:focus-visible,.track:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.track{flex:1 1 220px;min-width:160px;height:10px;background:var(--chip);border-radius:99px;cursor:pointer;position:relative;overflow:hidden}
+.track i{position:absolute;inset-block:0;inset-inline-start:0;width:0;background:var(--brand);border-radius:99px}
+#time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;direction:ltr;min-width:84px;text-align:center}
+.scenes{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+.chip{font:inherit;font-size:14px;text-align:start;color:var(--fg);background:var(--chip);border:0;border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;gap:8px;align-items:baseline}
+.chip b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700;min-width:1.4em}
+.chip.on{background:var(--chip-on);color:var(--chip-on-fg)}
+.chip.on b{color:inherit}
+.notes{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:15px;max-width:72ch}
+.notes p{margin:0 0 6px}
+@media (prefers-reduced-motion:reduce){.sub{transition:none}}
+</style>
+
+<main class="wrap" lang="en">
+  <header>
+    <h1>Seen <span dir="rtl" lang="he">(רואים אותי)</span></h1>
+    <p class="lede">Animatic v2 for the ALUT hostel madrichim explainer. About 104 seconds, no voice-over. Subtitles are in Hebrew with an English gloss underneath.</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <svg id="stage-svg" viewBox="0 0 1600 900" role="img" aria-label="Shape animation about the role of the madrich">
+      <defs></defs>
+      <rect id="bg" width="1600" height="900" fill="#F6F3EC"></rect>
+      <g id="cam"></g>
+    </svg>
+    <div class="sub" id="sub" aria-live="off"><span class="he" dir="rtl" lang="he"></span><span class="en"></span></div>
+  </div>
+
+  <div class="bar">
+    <button class="btn" id="play" type="button">Pause</button>
+    <button class="btn ghost" id="restart" type="button">Restart</button>
+    <div class="track" id="track" role="slider" tabindex="0" aria-label="Video progress" aria-valuemin="0" aria-valuemax="104" aria-valuenow="0"><i id="fill"></i></div>
+    <button class="btn ghost" id="gloss" type="button" aria-pressed="true">English gloss: on</button>
+    <span id="time">0:00 / 1:34</span>
+  </div>
+
+  <nav class="scenes" id="scenes" aria-label="Scenes"></nav>
+
+  <section class="notes">
+    <p>Visual rules in this version: every person is an icon. Madrichim are white figures with the blue diagonal key strap. Friends are colored figures. Grey figures are the people nobody sees. Abstract shapes appear only where the idea itself is abstract (the opening, behavior plans, the night, the change).</p>
+    <p>All colours come from the ALUT palette and the logo appears only in the last scene. The Hebrew subtitles are the narration text, and the English line is for the team only.</p>
+  </section>
+</main>
+
+<script>
+(()=>{
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const svg=$('#stage-svg'), defs=svg.querySelector('defs'), camG=$('#cam'), bgR=$('#bg');
+const C={yellow:'#F4B848',red:'#E36969',mint:'#6DCEB3',purple:'#8A71DD',blue:'#0054A6',white:'#FFFFFF',cream:'#F6F3EC',gray:'#CFCBC2'};
+const N=100, TOTAL=104;
+const LOGO='data:image/png;base64,__LOGO__';
+
+/* ---------- morphing shapes (used for houses, hearts, eye, page, clock, sun, moon) ---------- */
+const PATHS={
+  circle:'M50 0A50 50 0 0 1 100 50A50 50 0 0 1 50 100A50 50 0 0 1 0 50A50 50 0 0 1 50 0Z',
+  square:'M50 8L92 8L92 92L8 92L8 8Z',
+  heart:'M50 30C50 12 32 4 18 14C2 27 6 52 50 94C94 52 98 27 82 14C68 4 50 12 50 30Z',
+  house:'M50 6L96 46L84 46L84 94L16 94L16 46L4 46Z',
+  eye:'M50 22C72 22 92 38 98 50C92 62 72 78 50 78C28 78 8 62 2 50C8 38 28 22 50 22Z',
+  moon:'M62 6A46 46 0 1 0 94 70A38 38 0 1 1 62 6Z',
+  page:'M50 6L72 6L90 24L90 94L10 94L10 6Z',
+  pill:'M50 0L88 0A12 12 0 0 1 88 24L12 24A12 12 0 0 1 12 0Z'
+};
+function sample(d){
+  const p=document.createElementNS(NS,'path');p.setAttribute('d',d);defs.appendChild(p);
+  const L=p.getTotalLength();let pts=[];
+  for(let i=0;i<N;i++){const q=p.getPointAtLength(L*i/N);pts.push([q.x,q.y]);}
+  defs.removeChild(p);
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  for(const [x,y] of pts){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}
+  const cx=(x0+x1)/2,cy=(y0+y1)/2,s=Math.max(x1-x0,y1-y0);
+  pts=pts.map(([x,y])=>[(x-cx)/s,(y-cy)/s]);
+  let ar=0;for(let i=0;i<N;i++){const a=pts[i],b=pts[(i+1)%N];ar+=a[0]*b[1]-b[0]*a[1];}
+  if(ar<0)pts.reverse();
+  let best=0,bd=9;
+  for(let i=0;i<N;i++){let a=Math.atan2(pts[i][1],pts[i][0])+Math.PI/2;a=Math.abs(Math.atan2(Math.sin(a),Math.cos(a)));if(a<bd){bd=a;best=i;}}
+  return pts.slice(best).concat(pts.slice(0,best));
+}
+const SH={};for(const k in PATHS)SH[k]=sample(PATHS[k]);
+const morph=(a,b,t)=>{const r=new Array(N);for(let i=0;i<N;i++)r[i]=[a[i][0]+(b[i][0]-a[i][0])*t,a[i][1]+(b[i][1]-a[i][1])*t];return r;};
+
+/* ---------- people and icons ---------- */
+const PERSON_SVG='<circle class="h" cx="0" cy="-.3" r=".125"/><path class="b" d="M-.25 .5V.02Q-.25 -.14 -.11 -.14H.11Q.25 -.14 .25 .02V.5Z"/><line class="s" x1="-.12" y1="-.12" x2=".21" y2=".32" stroke="'+C.blue+'" stroke-width=".045" stroke-linecap="round" opacity="0"/><rect class="k" x=".175" y=".3" width=".07" height=".1" rx=".015" fill="'+C.blue+'" opacity="0"/>';
+const ICONS={
+  food:'<circle r="24" fill="none" stroke="currentColor" stroke-width="8"/><path d="M-44 -34V34M-52 -34V-18Q-52 -12 -44 -12Q-36 -12 -36 -18V-34M44 -34V34M44 -34Q36 -16 44 -4" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>',
+  water:'<path d="M-24 -38H24L18 40H-18Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><path d="M-21 -6H21L18 40H-18Z" fill="currentColor"/>',
+  shower:'<path d="M-36 -10A36 36 0 0 1 36 -10Z" fill="currentColor"/><path d="M0 -46V-30" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><g fill="currentColor"><circle cx="-24" cy="10" r="5"/><circle cx="0" cy="16" r="5"/><circle cx="24" cy="10" r="5"/><circle cx="-12" cy="34" r="5"/><circle cx="12" cy="34" r="5"/></g>',
+  shirt:'<path d="M-14 -38Q0 -26 14 -38L40 -26L32 -4L22 -10V38H-22V-10L-32 -4L-40 -26Z" fill="currentColor"/>',
+  brush:'<g transform="rotate(-40)"><rect x="-44" y="-5" width="60" height="10" rx="5" fill="currentColor"/><rect x="18" y="-12" width="26" height="12" rx="3" fill="currentColor"/><path d="M22 -12V-20M28 -12V-20M34 -12V-20M40 -12V-20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></g>',
+  bowl:'<path d="M-40 -6H40A40 40 0 0 1 -40 -6Z" fill="currentColor"/><path d="M-14 -18Q-20 -30 -10 -38M8 -18Q2 -30 12 -38" stroke="currentColor" fill="none" stroke-width="5" stroke-linecap="round"/>',
+  pill:'<g transform="rotate(-40)"><rect x="-38" y="-16" width="76" height="32" rx="16" fill="none" stroke="currentColor" stroke-width="7"/><path d="M0 -16V16" stroke="currentColor" stroke-width="7"/><path d="M0 -16H-22A16 16 0 0 0 -22 16H0Z" fill="currentColor"/></g>'
+};
+
+/* ---------- easing and colour ---------- */
+const E={
+  lin:t=>t,
+  io:t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,
+  out:t=>1-Math.pow(1-t,3),
+  back:t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);},
+  inb:t=>{const c1=1.70158,c3=c1+1;return c3*t*t*t-c1*t*t;}
+};
+const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const hex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const lerpC=(a,b,t)=>{if(a[0]!=='#'||b[0]!=='#')return t<1?a:b;t=Math.max(0,Math.min(1,t));const A=rgb(a),B=rgb(b);return hex(A.map((v,i)=>v+(B[i]-v)*t));};
+const COLKEYS=['fill','sk','color'];
+
+/* ---------- animated objects ---------- */
+const PD={x:800,y:450,sz:0,w:1,h:1,rot:0,orb:0,orad:0,op:0,fill:C.gray,sk:'none',sw:0,shape:'circle'};
+const PERD={x:800,y:450,sz:0,op:0,fill:C.gray,sk:'none',sw:0,strap:0,bob:0};
+const ICOD={x:800,y:450,sz:0,rot:0,op:0,color:C.white};
+const LND={x1:0,y1:0,x2:0,y2:0,sw:10,sk:C.blue,op:0};
+class Obj{
+  constructor(def,el,kind){this.def=def;this.el=el;this.kind=kind;this.ph=Math.random()*6.28;this.reset();}
+  reset(){Object.assign(this,this.def);this.tw=[];if(this.def.shape)this.pts=SH[this.def.shape];}
+}
+const ALL=[];
+const mk=(def,kind='path',tag='path')=>{const el=document.createElementNS(NS,tag);camG.appendChild(el);const o=new Obj(def,el,kind);ALL.push(o);return o;};
+const mkPerson=()=>{const o=mk({...PERD},'person','g');o.el.innerHTML=PERSON_SVG;o.r={h:o.el.querySelector('.h'),b:o.el.querySelector('.b'),s:o.el.querySelector('.s'),k:o.el.querySelector('.k')};return o;};
+const mkIcon=()=>mk({...ICOD},'icon','g');
+const setIcon=(o,name)=>{o.el.innerHTML=ICONS[name];};
+const bg=new Obj({fill:C.cream},null,'bg'), cam=new Obj({cx:800,cy:450,z:1},null,'cam');
+
+const HX=[330,800,1270], HY=440;
+const bld=mk({...PD,fill:'none',sk:C.blue,sw:10,shape:'house'});
+const hs=[0,1,2].map(k=>mk({...PD,fill:'none',sk:C.blue,sw:7,shape:'house',x:HX[k],y:HY}));
+const bm=mkPerson();                                   // big madrich for scene 2
+const p=[0,1,2,3,4].map(()=>mk({...PD}));              // generic morph shapes
+const ic=[0,1,2,3].map(()=>mkIcon());                  // task icons
+const gl=Array.from({length:8},()=>mkPerson());        // grey line (unseen)
+const bc=Array.from({length:10},()=>mkPerson());       // blue crowd
+const g=Array.from({length:24},()=>mkPerson());        // friends
+const m=[0,1,2].map(()=>mkPerson());                   // madrichim
+const topS=mk({...PD});                                 // always drawn above the people
+const line=mk({...LND},'line','line');
+const textDef={x:800,y:450,sz:100,op:0,fill:C.blue};
+const tx1=mk({...textDef},'text','text'), tx2=mk({...textDef},'text','text'), btnTx=mk({...textDef},'text','text');
+const logo=mk({x:190,y:735,sz:0,op:0},'image','image');
+tx1.el.textContent='עבודה קשה';tx2.el.textContent='רוצים להיות האדם שרואה?';btnTx.el.textContent='הגשת מועמדות';
+for(const t of [tx1,tx2,btnTx]){const e=t.el;e.setAttribute('text-anchor','middle');e.setAttribute('dominant-baseline','central');e.setAttribute('font-family',"Heebo,Arial,sans-serif");e.setAttribute('font-weight','800');e.setAttribute('direction','rtl');}
+logo.el.setAttribute('href',LOGO);
+line.el.setAttribute('stroke-linecap','round');
+
+/* ---------- tween engine ---------- */
+let T=0,snap=false,cur={t:0};
+function to(a,props,o={}){
+  const d=o.d??.8,at=o.at??0,ease=E[o.ease||'io'];
+  if(snap){for(const k in props){if(k==='shape'){a.pts=SH[props.shape];a.shape=props.shape;}else a[k]=props[k];}return;}
+  a.tw.push({t0:cur.t+at,d,ease,to:props,started:false});
+}
+const S=(a,props,at=0)=>to(a,props,{d:0,at});
+function step(a,now){
+  for(let i=0;i<a.tw.length;i++){
+    const w=a.tw[i];if(now<w.t0)continue;
+    if(!w.started){w.started=true;w.from={};for(const k in w.to)w.from[k]=k==='shape'?a.pts:a[k];}
+    const pr=w.d<=0?1:Math.min(1,(now-w.t0)/w.d),e=w.ease(pr);
+    for(const k in w.to){
+      const f=w.from[k],t=w.to[k];
+      if(k==='shape'){const tp=SH[t];a.pts=pr>=1?tp:morph(f,tp,e);if(pr>=1)a.shape=t;}
+      else if(COLKEYS.includes(k))a[k]=pr>=1?t:lerpC(f,t,e);
+      else a[k]=f+(t-f)*e;
+    }
+    if(pr>=1){a.tw.splice(i,1);i--;}
+  }
+}
+const f1=v=>v.toFixed(1);
+function render(o){
+  const el=o.el,op=Math.max(0,Math.min(1,o.op)).toFixed(3);
+  if(o.kind==='path'){
+    if(o.op<=.002||o.sz<=.5){el.setAttribute('opacity','0');return;}
+    const sx=o.sz*o.w,sy=o.sz*o.h;let d='';
+    for(let i=0;i<N;i++){const q=o.pts[i];d+=(i?'L':'M')+f1(q[0]*sx)+' '+f1(q[1]*sy);}
+    const ar=o.orb*Math.PI/180,px=o.x+o.orad*Math.sin(ar),py=o.y-o.orad*Math.cos(ar);
+    el.setAttribute('d',d+'Z');
+    el.setAttribute('transform',`translate(${f1(px)} ${f1(py)}) rotate(${f1(o.rot+o.orb)})`);
+    el.setAttribute('fill',o.fill);el.setAttribute('stroke',o.sk);el.setAttribute('stroke-width',f1(o.sw));
+    el.setAttribute('stroke-linejoin','round');el.setAttribute('opacity',op);
+  }else if(o.kind==='person'){
+    if(o.op<=.002||o.sz<=.5){el.setAttribute('opacity','0');return;}
+    const b=o.bob?Math.sin(T*9+o.ph)*o.bob:0;
+    el.setAttribute('transform',`translate(${f1(o.x)} ${f1(o.y+b)}) scale(${o.sz.toFixed(2)})`);
+    el.setAttribute('opacity',op);
+    for(const n of ['h','b']){const e=o.r[n];e.setAttribute('fill',o.fill);e.setAttribute('stroke',o.sk);e.setAttribute('stroke-width',o.sw);e.setAttribute('stroke-linejoin','round');}
+    const sa=Math.max(0,Math.min(1,o.strap)).toFixed(2);o.r.s.setAttribute('opacity',sa);o.r.k.setAttribute('opacity',sa);
+  }else if(o.kind==='icon'){
+    if(o.op<=.002||o.sz<=.5){el.setAttribute('opacity','0');return;}
+    el.setAttribute('transform',`translate(${f1(o.x)} ${f1(o.y)}) rotate(${f1(o.rot)}) scale(${(o.sz/100).toFixed(3)})`);
+    el.style.color=o.color;el.setAttribute('opacity',op);
+  }else if(o.kind==='line'){
+    if(o.op<=.002){el.setAttribute('opacity','0');return;}
+    el.setAttribute('x1',f1(o.x1));el.setAttribute('y1',f1(o.y1));el.setAttribute('x2',f1(o.x2));el.setAttribute('y2',f1(o.y2));
+    el.setAttribute('stroke',o.sk);el.setAttribute('stroke-width',f1(o.sw));el.setAttribute('opacity',op);
+  }else if(o.kind==='text'){
+    el.setAttribute('x',f1(o.x));el.setAttribute('y',f1(o.y));el.setAttribute('font-size',f1(Math.max(1,o.sz)));
+    el.setAttribute('fill',o.fill);el.setAttribute('opacity',op);
+  }else if(o.kind==='image'){
+    const w=Math.max(0,o.sz),h=w*442/480;
+    el.setAttribute('x',f1(o.x-w/2));el.setAttribute('y',f1(o.y-h/2));el.setAttribute('width',f1(w));el.setAttribute('height',f1(h));
+    el.setAttribute('opacity',op);
+  }
+}
+
+/* ---------- layout helpers ---------- */
+const FC=[C.yellow,C.red,C.mint,C.purple];
+const fcol=i=>FC[(i+Math.floor(i/6))%4];
+const hpos=i=>{const k=Math.floor(i/8),j=i%8;return{x:HX[k]-105+70*(j%4),y:470+65*Math.floor(j/4)};};
+const cpos=i=>({x:583+62*(i%8),y:505+70*Math.floor(i/8)});
+const fadeAll=(at=0,d=.5,except=[])=>{for(const o of ALL)if(!except.includes(o))to(o,{op:0},{at,d});};
+const pReset={w:1,h:1,rot:0,orb:0,orad:0,sk:'none',sw:0};
+const madrich=(o,x,y,sz,at=0)=>S(o,{x,y,sz:0,fill:C.white,sk:C.blue,sw:.02,strap:1,bob:0,op:0},at);
+const friend=(o,x,y,col,at=0)=>S(o,{x,y,sz:0,fill:col,sk:'none',sw:0,strap:0,bob:0,op:0},at);
+
+/* ---------- scenes ---------- */
+const SC=[
+{t:0,name:'Opening',enter(){
+  S(bg,{fill:C.cream});
+  gl.forEach((o,i)=>{S(o,{x:120+110*i,y:740,sz:120,fill:C.gray,op:0,strap:0,bob:0});to(o,{op:1},{at:.2+i*.08,d:.6});});
+  const ys=[300,430,350,470,320,410,360,450,330,420];
+  bc.forEach((o,i)=>{
+    const x0=200-120*i,t=i/9,gx=572+(1159-572)*t,gy=107+(888-107)*t;
+    S(o,{x:x0,y:ys[i],sz:120,fill:C.blue,bob:7,strap:0,op:0});
+    to(o,{op:1},{d:.4});
+    to(o,{x:x0+1100},{d:4.4,ease:'lin'});
+    to(o,{x:gx,y:gy,sz:100,bob:0},{at:4.6+i*.05,d:1.4});
+    to(o,{sz:0},{at:6.8+i*.04,d:.7,ease:'inb'});
+  });
+  S(line,{x1:572,y1:107,x2:1159,y2:888,sw:44,sk:C.blue,op:0});
+  to(line,{op:1},{at:6.6,d:.5});
+}},
+{t:9,name:'The madrich',enter(){
+  madrich(bm,800,390,520);S(bm,{strap:0});
+  to(bm,{sz:520,op:1},{at:.2,d:1.2,ease:'back'});
+  to(line,{x1:737.6,y1:327.6,x2:909,y2:556,sw:23.4},{at:.2,d:1.3});
+  S(bm,{strap:1},1.6);S(line,{op:0},1.6);
+  to(gl[3],{fill:C.yellow,sz:150},{at:3.4,d:.7,ease:'back'});
+  to(gl[3],{sz:120},{at:4.2,d:.4});
+}},
+{t:17,name:'Hostel, three houses',enter(){
+  fadeAll(0,.5);
+  g.forEach((o,i)=>friend(o,800,470,fcol(i),.6));
+  to(bld,{sz:760,op:1},{at:.7,d:1,ease:'back'});
+  g.forEach((o,i)=>{const c=cpos(i);to(o,{x:c.x,y:c.y,sz:52,op:1},{at:1+i*.035,d:1.4,ease:'back'});});
+  to(bld,{sz:0,op:0},{at:5.2,d:.8,ease:'inb'});
+  hs.forEach((o,k)=>to(o,{sz:440,op:1},{at:5.5+k*.15,d:1,ease:'back'}));
+  g.forEach((o,i)=>{const c=hpos(i);to(o,{x:c.x,y:c.y,sz:56},{at:5.4+(i%8)*.05,d:1.4});});
+}},
+{t:26,name:'Three madrichim per house',enter(){
+  to(cam,{cx:800,cy:480,z:1.6},{at:.2,d:1.6});
+  for(const k of [0,2])to(hs[k],{op:.15},{at:.2,d:.8});
+  g.forEach((o,i)=>{if(Math.floor(i/8)!==1)to(o,{op:.15},{at:.2,d:.8});});
+  m.forEach((o,j)=>{madrich(o,730+70*j,610,66);to(o,{sz:66,op:1},{at:1.6+.3*j,d:.7,ease:'back'});});
+  for(let i=8;i<16;i++){to(g[i],{sz:66},{at:3.4+(i-8)*.08,d:.35});to(g[i],{sz:56},{at:3.8+(i-8)*.08,d:.35});}
+}},
+{t:34,name:'Afternoon',enter(){
+  to(bg,{fill:C.yellow},{d:1});
+  to(cam,{cx:800,cy:450,z:1},{d:.9});
+  fadeAll(0,.6);
+  S(p[0],{...pReset,shape:'circle',x:800,y:-120,sz:260,fill:'#FFF3C9',op:1},.7);
+  to(p[0],{y:330,sz:320,fill:C.white,sk:C.blue,sw:12},{at:.8,d:2,ease:'io'});
+  S(p[1],{...pReset,shape:'square',x:800,y:330,sz:115,w:.09,fill:C.blue,orad:57,orb:0,op:0},.7);
+  S(p[2],{...pReset,shape:'square',x:800,y:330,sz:165,w:.06,fill:C.blue,orad:82,orb:0,op:0},.7);
+  to(p[1],{op:1},{at:2.8,d:.4});to(p[2],{op:1},{at:2.8,d:.4});
+  to(p[1],{orb:150},{at:2.8,d:4.4,ease:'lin'});to(p[2],{orb:720},{at:2.8,d:4.4,ease:'lin'});
+  const PX=[430,740,1050],fc=[C.red,C.mint,C.purple];
+  for(let j=0;j<3;j++){
+    S(m[j],{x:PX[j]-700,y:690,sz:140,fill:C.white,sk:C.blue,sw:.02,strap:1,bob:6,op:0},.7);
+    S(g[j],{x:PX[j]+810,y:690,sz:130,fill:fc[j],sk:'none',sw:0,strap:0,bob:6,op:0},.7);
+    to(m[j],{op:1,x:PX[j]},{at:3.2+j*.25,d:1.4,ease:'out'});
+    to(g[j],{op:1,x:PX[j]+120},{at:3.2+j*.25,d:1.4,ease:'out'});
+    to(m[j],{bob:0},{at:4.7+j*.25,d:.3});to(g[j],{bob:0},{at:4.7+j*.25,d:.3});
+  }
+}},
+{t:42,name:'Basic care',enter(){
+  to(bg,{fill:C.mint},{d:1});
+  fadeAll(0,.5);
+  const names=['food','water','shower','shirt'],xs=[440,680,920,1160],hc=[C.red,C.white,C.yellow,C.purple];
+  ic.forEach((o,j)=>{
+    setIcon(o,names[j]);
+    S(o,{x:xs[j],y:450,sz:0,rot:0,color:C.white,op:0},.6);
+    to(o,{sz:170,op:1},{at:1+j*.3,d:.7,ease:'back'});
+    to(o,{sz:0,op:0},{at:4.2+j*.35,d:.5,ease:'inb'});
+    const h=p[j];
+    S(h,{...pReset,shape:'heart',x:xs[j],y:450,sz:0,fill:hc[j],op:0},.6);
+    to(h,{sz:190,op:1},{at:4.5+j*.35,d:.7,ease:'back'});
+  });
+  to(p[0],{x:800,sz:420,fill:C.red},{at:7,d:1.2});
+  for(let j=1;j<4;j++)to(p[j],{x:800,sz:200,op:0},{at:7,d:1.1});
+  madrich(m[0],330,540,300,.6);to(m[0],{sz:300,op:1},{at:7.4,d:.7,ease:'back'});
+  friend(g[1],1270,540,C.purple,.6);to(g[1],{sz:300,op:1},{at:7.6,d:.7,ease:'back'});
+}},
+{t:51,name:'Behavior plans',enter(){
+  to(bg,{fill:C.purple},{d:1});
+  fadeAll(0,.5);
+  S(p[0],{...pReset,x:800,y:450,sz:0,shape:'page',fill:C.white,op:0},.6);
+  to(p[0],{sz:380,op:1},{at:.7,d:.8,ease:'back'});
+  const ys=[385,450,515],xs=[780,815,790],rs=[-14,9,-6],ws=[.45,.3,.55];
+  for(let j=0;j<3;j++){
+    const o=p[j+1];
+    S(o,{...pReset,x:xs[j],y:ys[j],sz:300,w:ws[j],h:.035,rot:rs[j],shape:'square',fill:C.purple,op:0},.6);
+    to(o,{op:1},{at:1.5+j*.2,d:.4});
+    to(o,{rot:0,x:800,w:.5},{at:3.8+j*.2,d:1.3});
+    to(o,{op:0},{at:6.6,d:.5});
+  }
+  to(p[0],{shape:'circle',sz:380},{at:6.4,d:1.1});
+}},
+{t:60,name:'Night',enter(){
+  to(bg,{fill:C.blue},{d:1});
+  fadeAll(0,.5);
+  S(p[0],{...pReset,x:800,y:380,sz:0,shape:'moon',fill:C.yellow,op:0},.6);
+  to(p[0],{sz:300,op:1},{at:.7,d:.9,ease:'back'});
+  to(p[0],{shape:'eye',fill:C.white,sz:540,y:400},{at:2,d:1.2});
+  S(p[4],{...pReset,x:800,y:400,sz:0,shape:'circle',fill:C.blue,op:0},.6);
+  to(p[4],{sz:190,op:1},{at:3,d:.6,ease:'back'});
+  to(p[4],{x:720},{at:3.7,d:.6});to(p[4],{x:880},{at:4.4,d:.8});to(p[4],{x:800},{at:5.3,d:.5});
+  S(p[1],{...pReset,x:800,y:400,sz:300,shape:'circle',fill:'none',sk:C.yellow,sw:6,op:.9},3.2);
+  to(p[1],{sz:1100,op:0},{at:3.2,d:1.6,ease:'out'});
+  S(p[1],{sz:300,op:.9},4.9);
+  to(p[1],{sz:1100,op:0},{at:4.9,d:1.6,ease:'out'});
+  to(p[0],{shape:'house',fill:C.yellow,sz:460,y:440},{at:5.6,d:1.1});
+  to(p[4],{op:0,sz:0},{at:5.6,d:.4});
+  S(p[2],{...pReset,x:800,y:540,sz:0,shape:'square',fill:'#FFF6D6',op:0},.6);
+  to(p[2],{sz:100,op:1},{at:6.8,d:.6,ease:'back'});
+}},
+{t:68,name:'Morning, independence',enter(){
+  to(bg,{fill:C.cream},{d:1});
+  fadeAll(0,.5);
+  S(p[0],{...pReset,x:800,y:1000,sz:300,shape:'circle',fill:C.yellow,op:1},.6);
+  to(p[0],{y:290},{at:.7,d:2.4,ease:'out'});
+  friend(g[5],520,560,C.purple,.6);to(g[5],{sz:280,op:1},{at:1,d:.7,ease:'back'});
+  madrich(m[0],1080,560,280,.6);to(m[0],{sz:280,op:1},{at:1.3,d:.7,ease:'back'});
+  const strip=[['shirt',680],['bowl',800],['pill',920]];
+  strip.forEach(([n,x],k)=>{const o=ic[k+1];setIcon(o,n);S(o,{x,y:75,sz:0,rot:0,color:C.blue,op:0},.6);to(o,{sz:76,op:1},{at:2+k*.35,d:.6,ease:'back'});});
+  setIcon(ic[0],'brush');S(ic[0],{x:860,y:600,sz:0,rot:0,color:C.red,op:0},.6);
+  to(ic[0],{sz:150,op:1},{at:3.6,d:.6,ease:'back'});
+  to(ic[0],{x:680,y:610},{at:5,d:1.4});
+  to(m[0],{x:1330,sz:220,op:.45},{at:5.2,d:1.8});
+  to(g[5],{sz:320},{at:5.8,d:1.2});
+}},
+{t:78,name:'The change',enter(){
+  to(bg,{fill:C.mint},{d:1});
+  fadeAll(0,.5,[g[5]]);
+  to(g[5],{x:800,y:470,sz:420,fill:C.gray},{at:.3,d:1});
+  to(g[5],{fill:C.yellow},{at:2.2,d:1.2});
+  S(topS,{...pReset,shape:'heart',x:800,y:525,sz:0,fill:C.red,op:0},.6);
+  to(topS,{sz:130,op:1},{at:3,d:.7,ease:'back'});
+  S(p[1],{...pReset,x:800,y:470,sz:460,shape:'circle',fill:'none',sk:C.white,sw:8,op:.9},3.4);
+  to(p[1],{sz:1100,op:0},{at:3.4,d:1.8,ease:'out'});
+}},
+{t:84,name:'The message',enter(){
+  to(bg,{fill:C.cream},{d:.8});
+  fadeAll(0,.5);
+  S(tx1,{x:800,y:470,sz:170,op:0,fill:'#5C6370'});
+  to(tx1,{op:1},{at:.6,d:.6});to(tx1,{op:0},{at:4,d:.5});
+  S(p[0],{...pReset,x:800,y:450,sz:0,shape:'heart',fill:C.red,op:0},.6);
+  to(p[0],{sz:340,op:1},{at:4.4,d:1,ease:'back'});
+  g.forEach((o,i)=>{
+    const a=i/24*2*Math.PI-Math.PI/2,x=800+640*Math.cos(a),y=410+265*Math.sin(a);
+    friend(o,800,450,fcol(i),.6);
+    to(o,{x,y,sz:92,op:1},{at:5.4+i*.07,d:1,ease:'back'});
+  });
+}},
+{t:94,name:'Call to apply',enter(){
+  to(bg,{fill:C.white},{d:1});
+  g.forEach((o,i)=>to(o,{x:800,y:290,sz:0,op:0},{at:.2+i*.03,d:.9,ease:'inb'}));
+  to(p[0],{shape:'eye',fill:C.blue,sz:480,y:290},{at:.8,d:1.2});
+  S(p[4],{...pReset,x:800,y:290,sz:0,shape:'circle',fill:C.yellow,op:0});
+  to(p[4],{sz:160,op:1},{at:1.8,d:.6,ease:'back'});
+  S(tx2,{x:800,y:545,sz:74,fill:C.blue,op:0});to(tx2,{op:1},{at:2.6,d:.7});
+  S(p[1],{...pReset,x:800,y:690,sz:0,shape:'pill',fill:C.yellow,op:0});
+  to(p[1],{sz:440,op:1},{at:3.6,d:.7,ease:'back'});
+  S(btnTx,{x:800,y:692,sz:46,fill:C.blue,op:0});to(btnTx,{op:1},{at:4.1,d:.5});
+  S(logo,{x:190,y:735,sz:0,op:0});to(logo,{sz:210,op:1},{at:5,d:.8,ease:'back'});
+}}
+];
+const SUBS=[
+[.4,7,'יש אנשים שהעולם עובר לידם ולא מבחין בהם.','Some people the world walks past without noticing.'],
+[9.6,16,'אבל יש מי שעוצר ורואה אותם: המדריכים והמדריכות.','But some people stop and see them: the madrichim.'],
+[17.6,21.6,'בהוסטל גרים עשרים וארבעה חברים,','The hostel is home to twenty-four friends,'],
+[22,25.6,'בשלושה בתים. כל אחד שונה, וצרכיו שונים.','in three houses. Each one different, with different needs.'],
+[26.4,33.6,'ובכל בית, בכל משמרת, שלושה מדריכים ומדריכות שנמצאים שם בשבילם.','And in every house, on every shift, three madrichim are there for them.'],
+[34.4,41.6,'הם מגיעים כשהחברים חוזרים מהמסגרת, ועוזרים להם להבין איך ייראה המשך היום.','They arrive when the friends return from their day programs, and help them understand how the rest of the day will look.'],
+[42.6,46,'אוכל, מים, מקלחת, כביסה.','Food, water, a shower, laundry.'],
+[46.2,50.8,'דברים פשוטים, אבל כל אחד מהם אומר לחבר: אכפת לי ממך.','Simple things, but each one tells a friend: I care about you.'],
+[51.5,59.6,'הם מיישמים את התוכניות שאנשי המקצוע בנו לכל חבר, כדי שיהיה רגוע ובטוח.','They carry out the plans the professionals built for each friend, so every friend feels calm and safe.'],
+[60.5,63.6,'בלילה, כשהכול שקט, הם ערים.','At night, when everything is quiet, they are awake.'],
+[63.9,67.7,'בודקים כל שעתיים שהכול בסדר.','Checking every two hours that all is well.'],
+[68.6,72.2,'ובבוקר עוזרים להתכונן ליום.','In the morning, they help everyone get ready for the day.'],
+[72.5,77.7,'ובכל רגע שואלים: מה החבר יכול לעשות בעצמו?','And at every moment they ask: what can the friend do alone?'],
+[78.5,83.7,'וכשרואים אותו באמת, משהו משתנה.','And when someone is truly seen, something changes.'],
+[84.5,88.2,'זו לא עבודה קלה.','It is not an easy job.'],
+[88.6,93.7,'אבל כמעט אין עבודה שבה רואים את ההצלחה מול העיניים, ומקבלים עליה אהבה.','But there is almost no other job where you see success right in front of you, and receive love for it.'],
+[94.6,103.5,'','Do you want to be the person who sees? Apply now.']
+];
+
+/* ---------- playback ---------- */
+let ns=0,playing=true,last=performance.now();
+const subEl=$('#sub'),heEl=subEl.querySelector('.he'),enEl=subEl.querySelector('.en'),playBtn=$('#play'),fillEl=$('#fill'),timeEl=$('#time'),track=$('#track'),chips=[];
+const fmt=s=>{s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+function resetAll(){for(const o of ALL)o.reset();bg.reset();cam.reset();}
+function seek(k){
+  resetAll();snap=true;
+  for(let i=0;i<k;i++){cur=SC[i];SC[i].enter();}
+  snap=false;T=SC[k].t;ns=k;playing=true;playBtn.textContent='Pause';
+}
+function frame(now){
+  const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(playing){T+=dt;if(T>=TOTAL){T=TOTAL;playing=false;playBtn.textContent='Replay';}}
+  while(ns<SC.length&&T>=SC[ns].t){cur=SC[ns];snap=false;SC[ns].enter();ns++;}
+  for(const o of ALL)step(o,T);
+  step(bg,T);step(cam,T);
+  bgR.setAttribute('fill',bg.fill);
+  camG.setAttribute('transform',`translate(800 450) scale(${cam.z.toFixed(4)}) translate(${-cam.cx.toFixed(1)} ${-cam.cy.toFixed(1)})`);
+  for(const o of ALL)render(o);
+  const c=SUBS.find(x=>T>=x[0]&&T<x[1]);
+  if(c){if(heEl.textContent!==c[2])heEl.textContent=c[2];if(enEl.textContent!==c[3])enEl.textContent=c[3];subEl.classList.add('on');}else subEl.classList.remove('on');
+  fillEl.style.width=(T/TOTAL*100).toFixed(2)+'%';
+  timeEl.textContent=fmt(T)+' / '+fmt(TOTAL);
+  track.setAttribute('aria-valuenow',Math.round(T));
+  const idx=Math.max(0,ns-1);chips.forEach((b,i)=>b.classList.toggle('on',i===idx));
+  requestAnimationFrame(frame);
+}
+SC.forEach((s,i)=>{
+  const b=document.createElement('button');b.type='button';b.className='chip';
+  b.innerHTML='<b>'+(i+1)+'</b><span>'+s.name+'</span>';
+  b.addEventListener('click',()=>seek(i));
+  $('#scenes').appendChild(b);chips.push(b);
+});
+playBtn.addEventListener('click',()=>{
+  if(T>=TOTAL){seek(0);return;}
+  playing=!playing;playBtn.textContent=playing?'Pause':'Play';
+});
+$('#gloss').addEventListener('click',e=>{const off=subEl.classList.toggle('noen');e.target.textContent='English gloss: '+(off?'off':'on');e.target.setAttribute('aria-pressed',String(!off));});
+$('#restart').addEventListener('click',()=>seek(0));
+const trackSeek=x=>{
+  const r=track.getBoundingClientRect(),rtl=getComputedStyle(track).direction==='rtl';
+  let f=(x-r.left)/r.width;if(rtl)f=1-f;
+  f=Math.max(0,Math.min(.999,f));
+  let k=0;SC.forEach((s,i)=>{if(f*TOTAL>=s.t)k=i;});seek(k);
+};
+track.addEventListener('click',e=>trackSeek(e.clientX));
+track.addEventListener('keydown',e=>{
+  const idx=Math.max(0,ns-1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')seek(Math.max(0,idx-1));
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')seek(Math.min(SC.length-1,idx+1));
+});
+window.__demo={seek,get T(){return T;},pause(){playing=false;}};
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){seek(0);playing=false;playBtn.textContent='Play';}
+else seek(0);
+requestAnimationFrame(t=>{last=t;frame(t);});
+})();
+</script>
